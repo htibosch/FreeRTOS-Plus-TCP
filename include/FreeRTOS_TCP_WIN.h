@@ -218,6 +218,8 @@
                                 uint32_t ulFirst,
                                 uint32_t ulLast );
 
+BaseType_t xSequenceGreaterThan( uint32_t a, uint32_t b );
+BaseType_t xSequenceLessThan( uint32_t a, uint32_t b );
 
     #ifdef __cplusplus
         } /* extern "C" */

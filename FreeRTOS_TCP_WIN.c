@@ -264,10 +264,6 @@
     #endif /* ipconfigUSE_TCP_WIN */
 /*-----------------------------------------------------------*/
 
-    #if ( ipconfigUSE_TCP_WIN == 1 )
-        static portINLINE BaseType_t xSequenceLessThan( uint32_t a,
-                                                        uint32_t b );
-
 /**
  * @brief Check if a < b.
  *
@@ -276,7 +272,7 @@
  *
  * @return pdTRUE when "( b - ( a + 1 ) ) < 0x80000000", else pdFALSE.
  */
-        static portINLINE BaseType_t xSequenceLessThan( uint32_t a,
+        BaseType_t xSequenceLessThan( uint32_t a,
                                                         uint32_t b )
         {
             BaseType_t xResult;
@@ -294,12 +290,7 @@
             return xResult;
         }
 
-    #endif /* ipconfigUSE_TCP_WIN */
 /*-----------------------------------------------------------*/
-
-    #if ( ipconfigUSE_TCP_WIN == 1 )
-        static portINLINE BaseType_t xSequenceGreaterThan( uint32_t a,
-                                                           uint32_t b );
 
 /**
  * @brief Check if a > b.
@@ -309,7 +300,7 @@
  *
  * @return pdTRUE when "( a - b ) < 0x80000000", else pdFALSE.
  */
-        static portINLINE BaseType_t xSequenceGreaterThan( uint32_t a,
+        BaseType_t xSequenceGreaterThan( uint32_t a,
                                                            uint32_t b )
         {
             BaseType_t xResult;
@@ -327,7 +318,6 @@
             return xResult;
         }
 
-    #endif /* ipconfigUSE_TCP_WIN */
 
 /*-----------------------------------------------------------*/
     static portINLINE BaseType_t xSequenceGreaterThanOrEqual( uint32_t a,
