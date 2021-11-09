@@ -783,6 +783,7 @@ pxhigherprioritytaskwoken
 pxicmppacket
 pxipheader
 pxippacket
+pxiswaitingarpresolution
 pxiswaitingforarpresolution
 pxiterator
 pxlength
