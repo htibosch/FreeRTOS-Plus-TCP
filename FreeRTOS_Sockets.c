@@ -4103,7 +4103,7 @@ void vSocketWakeUpUser( FreeRTOS_Socket_t * pxSocket )
         {
             size_t uxLittlePerc = sock20_PERCENT;
             size_t uxEnoughPerc = sock80_PERCENT;
-            size_t uxSegmentCount = pxSocket->u.xTCP.uxRxStreamSize / pxSocket->u.xTCP.usCurMSS;
+            size_t uxSegmentCount = pxSocket->u.xTCP.uxRxStreamSize / pxSocket->u.xTCP.usMSS;
             static const struct xPercTable
             {
                 size_t uxPercLittle, uxPercEnough;
