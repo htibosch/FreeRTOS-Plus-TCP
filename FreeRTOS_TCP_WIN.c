@@ -606,7 +606,7 @@
                 /* Rx data has been stored while earlier packets were missing. */
                 xReturn = pdFALSE;
             }
-            else if( xSequenceGreaterThanOrEqual( pxWindow->rx.ulCurrentSequenceNumber, pxWindow->rx.ulHighestSequenceNumber ) != pdFALSE )
+			else if( xSequenceGreaterThanOrEqual( pxWindow->rx.ulCurrentSequenceNumber + 1U, pxWindow->rx.ulHighestSequenceNumber ) != pdFALSE )
             {
                 /* No Rx packets are being stored and the highest sequence number
                  * that has been received has been ACKed. */
