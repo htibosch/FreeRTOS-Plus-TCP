@@ -1208,7 +1208,6 @@
 
             if( ( lStartDistance < 0 ) && ( lLastDistance > 0 ) )
             {
-                /* lTCPWindowRxCheck: Ignore +1460 bytes, dist -277 1183 */
                 FreeRTOS_debug_printf( ( "lTCPWindowRxCheck: Received +%u bytes for %u, only using %d\n",
                                          ( unsigned ) ulLength,
                                          ( unsigned ) ( ulSequenceNumber - pxWindow->rx.ulFirstSequenceNumber ),
