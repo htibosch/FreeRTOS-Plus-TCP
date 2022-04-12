@@ -784,7 +784,7 @@ static void prvMACAddressConfig( ETH_HandleTypeDef * heth,
     ( void ) heth;
 
     /* Check the multicast bit. */
-    if( ( Addr[ 0 ] & 1U ) == 0U )
+    if( ( Addr[ 0 ] & 1U ) == 1U )
     {
         /* Calculate the selected MAC address high register. */
         ulTempReg = 0x80000000ul | ( ( uint32_t ) Addr[ 5 ] << 8 ) | ( uint32_t ) Addr[ 4 ];
