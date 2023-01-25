@@ -249,9 +249,29 @@
                              BaseType_t xReleaseAfterSend )
     {
         const NetworkBufferDescriptor_t * pxNetworkBuffer = pxDescriptor;
+        BaseType_t xIsIPv6 = pdFALSE;
 
-        /* _HT_ temporary change for debugging. */
-        if( ( pxNetworkBuffer != NULL ) && ( uxIPHeaderSizePacket( pxNetworkBuffer ) == ipSIZE_OF_IPv6_HEADER ) )
+        if( pxNetworkBuffer != NULL )
+        {
+            if( uxIPHeaderSizePacket( pxNetworkBuffer ) == ipSIZE_OF_IPv6_HEADER )
+            {
+                xIsIPv6 = pdTRUE;
+            }
+        }
+        else if( pxSocket != NULL )
+        {
+            if( uxIPHeaderSizeSocket( pxSocket ) == ipSIZE_OF_IPv6_HEADER )
+            {
+                xIsIPv6 = pdTRUE;
+            }
+        }
+        else
+        {
+            /* prvTCPReturnPacket_IPVx() needs either a network buffer, or a socket. */
+            configASSERT( pdFALSE );
+        }
+
+        if( xIsIPv6 == pdTRUE )
         {
             prvTCPReturnPacket_IPV6( pxSocket, pxDescriptor, ulLen, xReleaseAfterSend );
         }

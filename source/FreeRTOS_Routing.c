@@ -1058,7 +1058,7 @@ void FreeRTOS_FillEndPoint( NetworkInterface_t * pxNetworkInterface,
  * @return The end-point that has the given MAC-address.
  */
     NetworkEndPoint_t * FreeRTOS_FindEndPointOnMAC( const MACAddress_t * pxMACAddress,
-                                                    NetworkInterface_t * pxInterface )
+                                                    const NetworkInterface_t * pxInterface )
     {
         NetworkEndPoint_t * pxResult = NULL;
 
