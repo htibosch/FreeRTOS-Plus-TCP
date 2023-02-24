@@ -63,6 +63,8 @@
     #define baMINIMAL_BUFFER_SIZE    sizeof( ARPPacket_t )
 #endif /* ipconfigUSE_TCP == 1 */
 
+static NetworkBufferDescriptor_t xNetworkBufferDescriptors[ ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS ];
+
 /* Compile time assertion with zero runtime effects
  * it will assert on 'e' not being zero, as it tries to divide by it,
  * will also print the line where the error occured in case of failure */
@@ -100,7 +102,6 @@ BaseType_t xNetworkBuffersInitialise( void )
      * in this array.  The array is not accessed directly except during initialisation,
      * when the xFreeBuffersList is filled (as all the buffers are free when the system
      * is booted). */
-    static NetworkBufferDescriptor_t xNetworkBufferDescriptors[ ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS ];
     BaseType_t xReturn;
     uint32_t x;
 
@@ -342,25 +343,37 @@ void vReleaseNetworkBufferAndDescriptor( NetworkBufferDescriptor_t * const pxNet
 {
     BaseType_t xListItemAlreadyInFreeList;
 
+    taskENTER_CRITICAL();
+    {
+        xListItemAlreadyInFreeList = listIS_CONTAINED_WITHIN( &xFreeBuffersList, &( pxNetworkBuffer->xBufferListItem ) );
+    }
+    taskEXIT_CRITICAL();
+
     /* Ensure the buffer is returned to the list of free buffers before the
     * counting semaphore is 'given' to say a buffer is available.  Release the
     * storage allocated to the buffer payload.  THIS FILE SHOULD NOT BE USED
     * IF THE PROJECT INCLUDES A MEMORY ALLOCATOR THAT WILL FRAGMENT THE HEAP
     * MEMORY.  For example, heap_2 must not be used, heap_4 can be used. */
-    vReleaseNetworkBuffer( pxNetworkBuffer->pucEthernetBuffer );
+    if( xListItemAlreadyInFreeList == pdFALSE )
+    {
+        vReleaseNetworkBuffer( pxNetworkBuffer->pucEthernetBuffer );
+    }
+    else
+    {
+        FreeRTOS_printf( ( "vReleaseNetworkBufferAndDescriptor: already released\n" ) );
+    }
+
     pxNetworkBuffer->pucEthernetBuffer = NULL;
     pxNetworkBuffer->xDataLength = 0U;
 
-    taskENTER_CRITICAL();
+    if( xListItemAlreadyInFreeList == pdFALSE )
     {
-        xListItemAlreadyInFreeList = listIS_CONTAINED_WITHIN( &xFreeBuffersList, &( pxNetworkBuffer->xBufferListItem ) );
-
-        if( xListItemAlreadyInFreeList == pdFALSE )
+        taskENTER_CRITICAL();
         {
             vListInsertEnd( &xFreeBuffersList, &( pxNetworkBuffer->xBufferListItem ) );
         }
+        taskEXIT_CRITICAL();
     }
-    taskEXIT_CRITICAL();
 
     /*
      * Update the network state machine, unless the program fails to release its 'xNetworkBufferSemaphore'.
