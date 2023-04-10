@@ -1241,11 +1241,6 @@ static BaseType_t prvDHCPv6_handleOption( struct xNetworkEndPoint * pxEndPoint,
 
                if( uxIDSize <= sizeof( pxDHCPMessage->xClientID.pucID ) )
                {
-                   /* Refer to RFC3315 - sec 15.3, we need to discard packets with following conditions:
-                    *  - the message does not include a Server Identifier option.
-                    *  - the message does not include a Client Identifier option.
-                    *  - the contents of the Client Identifier option does not match the client's DUID.
-                    *  - the "transaction-id" field value does not match the value the client used in its Solicit message. */
                    ( void ) xBitConfig_read_uc( pxMessage, pxDHCPMessage->xClientID.pucID, uxIDSize ); /* Link Layer address, 6 bytes */
 
                    /* Check client DUID. */
@@ -1402,6 +1397,12 @@ static BaseType_t prvDHCPv6Analyse( struct xNetworkEndPoint * pxEndPoint,
         switch( pxDHCPMessage->uxMessageType )
         {
             case DHCPv6_message_Type_Advertise:
+
+            /* Refer to RFC3315 - sec 15.3, we need to discard packets with following conditions:
+             *  - the message does not include a Server Identifier option.
+             *  - the message does not include a Client Identifier option.
+             *  - the contents of the Client Identifier option does not match the client's DUID.
+             *  - the "transaction-id" field value does not match the value the client used in its Solicit message. */
             case DHCPv6_message_Type_Confirm:
             case DHCPv6_message_Type_Reply:
             case DHCPv6_message_Type_Decline:
