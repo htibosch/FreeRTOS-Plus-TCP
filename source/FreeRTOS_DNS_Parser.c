@@ -1155,7 +1155,7 @@
                  * is a real problem, like data corruption. */
                 configASSERT( pxNetworkBuffer != NULL );
 
-                condifASSERT( pxNetworkBuffer->pxEndPoint != NULL )
+                configASSERT( pxNetworkBuffer->pxEndPoint != NULL );
                 ( void ) memcpy( &xEndPoint, pxNetworkBuffer->pxEndPoint, sizeof( xEndPoint ) );
 
                 /* NBNS only handles IPv4 or "A" records. */
