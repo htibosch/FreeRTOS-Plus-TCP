@@ -448,6 +448,20 @@ STATIC_ASSERT( pdMS_TO_TICKS( ipconfigRA_IP_TEST_TIME_OUT_MSEC ) <= portMAX_DELA
     #error Invalid ipconfigIP_PASS_PACKETS_WITH_IP_OPTIONS configuration
 #endif
 
+/*
+ * ipconfigHAS_TCP_ACCEPT_HOOK
+ *
+ * Type: BaseType_t ( ipconfigENABLE | ipconfigDISABLE )
+ *
+ * Determines if user will define a function xApplicationTCPAcceptHook()
+ * which will be called for every TCP client.
+ * The client may only connect when this function returns pdTRUE.
+ */
+
+#ifndef ipconfigHAS_TCP_ACCEPT_HOOK
+    #define ipconfigHAS_TCP_ACCEPT_HOOK    ipconfigDISABLE
+#endif
+
 /*---------------------------------------------------------------------------*/
 
 /*

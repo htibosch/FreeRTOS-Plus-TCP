@@ -62,6 +62,17 @@
 #if( ipconfigUSE_IPv6 != 0 ) && ( ipconfigUSE_TCP == 1 )
 /* *INDENT-ON* */
 
+#if ipconfigIS_ENABLED( ipconfigHAS_TCP_ACCEPT_HOOK )
+
+/*
+ * This hook allows the user to allow specific IP-addreses and/or
+ * port ranges.
+ */
+
+static BaseType_t xIP_Address_allowed_v6( NetworkBufferDescriptor_t * pxNetworkBuffer );
+
+#endif
+
 /**
  * @brief Handle 'listen' event on the given socket.
  *
@@ -121,7 +132,14 @@ FreeRTOS_Socket_t * prvHandleListen_IPV6( FreeRTOS_Socket_t * pxSocket,
              * new socket when a connection comes in. */
             pxReturn = NULL;
 
-            if( pxSocket->u.xTCP.usChildCount >= pxSocket->u.xTCP.usBacklog )
+#if ipconfigIS_ENABLED( ipconfigHAS_TCP_ACCEPT_HOOK )
+			if( xIP_Address_allowed_v6 ( pxNetworkBuffer ) == pdFALSE )
+			{
+                ( void ) prvTCPSendReset( pxNetworkBuffer );
+            }
+            else
+#endif
+			if( pxSocket->u.xTCP.usChildCount >= pxSocket->u.xTCP.usBacklog )
             {
                 FreeRTOS_printf( ( "Check: Socket %u already has %u / %u child%s\n",
                                    pxSocket->usLocalPort,
@@ -228,6 +246,51 @@ FreeRTOS_Socket_t * prvHandleListen_IPV6( FreeRTOS_Socket_t * pxSocket,
     return pxReturn;
 }
 /*-----------------------------------------------------------*/
+
+#if ipconfigIS_ENABLED( ipconfigHAS_TCP_ACCEPT_HOOK )
+
+static BaseType_t xIP_Address_allowed_v6( NetworkBufferDescriptor_t * pxNetworkBuffer )
+{
+    /* MISRA Ref 11.3.1 [Misaligned access] */
+    /* More details at: https://github.com/FreeRTOS/FreeRTOS-Plus-TCP/blob/main/MISRA.md#rule-113 */
+    /* coverity[misra_c_2012_rule_11_3_violation] */
+    const TCPPacket_t * pxTCPPacket = ( ( const TCPPacket_t * ) pxNetworkBuffer->pucEthernetBuffer );
+    IPv46_Address_t xSourceAddress;
+    IPv46_Address_t xTargetAddress;
+	uint16_t usSourcePort;
+	uint16_t usTargetPort;
+	BaseType_t xReturn;
+
+	const IPHeader_IPv6_t * pxIPHeader_IPv6 = ( ( const IPHeader_IPv6_t * ) &( pxNetworkBuffer->pucEthernetBuffer[ ipSIZE_OF_ETH_HEADER ] ) );
+
+    usSourcePort = pxTCPPacket->xTCPHeader.usSourcePort;
+	xSourceAddress.xIs_IPv6 = pdTRUE;
+	memcpy( xSourceAddress.xIPAddress.xIP_IPv6.ucBytes, pxIPHeader_IPv6->xSourceAddress.ucBytes, ipSIZE_OF_IPv6_ADDRESS );
+	
+	usTargetPort = pxTCPPacket->xTCPHeader.usDestinationPort;
+	xTargetAddress.xIs_IPv6 = pdTRUE;
+	memcpy( xTargetAddress.xIPAddress.xIP_IPv6.ucBytes, pxIPHeader_IPv6->xDestinationAddress.ucBytes, ipSIZE_OF_IPv6_ADDRESS );
+    /* '%pip' is a printf format to print an IPv6 address.
+     * It expects an array of char's.
+     * '%xip' prints an IPv4 address.
+     * It expects a uint32_t
+     */
+	FreeRTOS_printf( ( "Local address  [%pip]:%u\n",
+		xTargetAddress.xIPAddress.xIP_IPv6.ucBytes,
+		FreeRTOS_htons( usTargetPort ) ) );
+	FreeRTOS_printf( ( "Remote address [%pip]:%u\n",
+		xSourceAddress.xIPAddress.xIP_IPv6.ucBytes,
+		FreeRTOS_htons( usSourcePort ) ) );
+
+	xReturn = xApplicationTCPAcceptHook(
+		&xSourceAddress,
+		usSourcePort,
+		&xTargetAddress,
+		usTargetPort );
+	return xReturn;
+}
+
+#endif /* ipconfigIS_ENABLED( ipconfigHAS_TCP_ACCEPT_HOOK ) */
 
 /* *INDENT-OFF* */
 #endif /* ( ipconfigUSE_IPv6 != 0 ) && ( ipconfigUSE_TCP == 1 ) */

@@ -108,6 +108,24 @@ BaseType_t prvTCPSocketCopy( FreeRTOS_Socket_t * pxNewSocket,
                              FreeRTOS_Socket_t * pxSocket );
 
 
+#if ipconfigIS_ENABLED( ipconfigHAS_TCP_ACCEPT_HOOK )
+    /* @brief A user-provided function that checks if a new TCP connection
+     *        should be accepted.
+     *
+     * @param[in] pxSourceAddress IP-address of the peer
+     * @param[in] usSourcePort Port on the peer side
+     * @param[in] pxTargetAddress IP-address of this device, eg 23, 80, 443 etc
+     * @param[in] usTargetPort 
+     *
+     * @return If the client may be accepted, pdTRUE is returned. Otherwise return pdFALSE.
+	 */
+    BaseType_t xApplicationTCPAcceptHook(
+        const IPv46_Address_t * pxSourceAddress,
+        uint16_t usSourcePort,
+        const IPv46_Address_t * pxTargetAddress,
+        uint16_t usTargetPort );
+#endif /* ipconfigIS_ENABLED( ipconfigHAS_TCP_ACCEPT_HOOK ) */
+
 /* *INDENT-OFF* */
 #ifdef __cplusplus
     } /* extern "C" */
