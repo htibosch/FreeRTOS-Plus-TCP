@@ -333,7 +333,7 @@ STATIC_ASSERT( pdMS_TO_TICKS( ipconfigRA_SEARCH_TIME_OUT_MSEC ) <= portMAX_DELAY
  * Unit: max iterations of RA wait state process
  * Minimum: 0
  *
- * Sets the amount of times a neighbour solicitation message can be
+ * Sets the number of times a neighbour solicitation message can be
  * retransmitted after timing out.
  */
 

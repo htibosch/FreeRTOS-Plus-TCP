@@ -64,9 +64,11 @@
         #define dnsNBNS_FLAGS_OPCODE_QUERY    0x0000U /**< NBNS opcode query. */
     #endif /* ( ipconfigUSE_NBNS == 1 ) */
 
-/* Host types. */
-    #define dnsTYPE_A_HOST            0x01U /**< DNS type A host. */
+/* DNS record types, native endian. */
+    #define dnsTYPE_A_HOST            0x0001U /**< DNS type A host. */
     #define dnsTYPE_AAAA_HOST         0x001CU
+    #define dnsTYPE_NS                0x0002U /**< authoritative Name Server. */
+    #define dnsTYPE_CNAME             0x0005U /**< Canonical name for an alias. */
     #define dnsTYPE_ANY_HOST          0x00FFU
 
     #define dnsCLASS_IN               0x01U /**< DNS class IN (Internet). */
